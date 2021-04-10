@@ -6,9 +6,13 @@ const cors = require('cors')
 const app = express()
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = process.env;
+const DEPLOYED_FRONTEND_URL = process.env.DEPLOYED_FRONTEND_URL
 
-
-app.use(cors())
+var corsOptions = {
+  origin: ['http://localhost:3000'],
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions))
 app.use(logger("dev"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
@@ -23,8 +27,6 @@ app.get("/", function(req, res, next) {
 });
 
 /* GET Google Authentication API. */
-//TODO not sending refreshToken, even on first sign up
-//TODO try again with force or extra options like offline
 app.get("/auth/google",	passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/", session: false }), function(req, res) {
